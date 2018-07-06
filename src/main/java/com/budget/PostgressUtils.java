@@ -2,19 +2,22 @@ package com.budget;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
-public class PostgressConfig {
+public class PostgressUtils {
 
-    private static PostgressConfig instance = null;
+    private static PostgressUtils instance = null;
     private String url, user, password;
 
-    private PostgressConfig(){
+    private PostgressUtils(){
     }
 
-    public static PostgressConfig getInstance() {
+    public static PostgressUtils getInstance() {
         if (instance == null)
-            instance = new PostgressConfig();
+            instance = new PostgressUtils();
         return instance;
     }
 
@@ -29,6 +32,10 @@ public class PostgressConfig {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, user, password);
     }
 
     public String getUrl() {

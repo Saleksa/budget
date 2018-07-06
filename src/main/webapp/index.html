@@ -8,6 +8,14 @@
 </head>
 
 <body>
+    <h2>Add account:</h2>
+    <div ng-controller="postController">
+        <form name="userForm" ng-submit="submitForm()">
+            <input type="text" id="name" ng-model="account.name">
+            <button id="add" type="submit">Add</button>
+        </form>
+        <h3>{{message}}</h3>
+    </div>
     <h2>All accounts:</h2>
     <div ng-controller="Accounts">
         <ul>

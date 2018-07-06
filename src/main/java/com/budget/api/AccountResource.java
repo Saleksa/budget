@@ -1,11 +1,10 @@
 package com.budget.api;
 
-import com.budget.PostgressConfig;
+import com.budget.PostgressUtils;
 import com.budget.entities.Account;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -40,14 +39,34 @@ public class AccountResource {
     public Response getAllAccounts() throws SQLException, IOException {
         LOGGER.log(Level.INFO, "Getting all accounts");
 
-        Connection connection = DriverManager.getConnection(
-                PostgressConfig.getInstance().getUrl(),
-                PostgressConfig.getInstance().getName(),
-                PostgressConfig.getInstance().getPassword()
-        );
+        Connection connection = PostgressUtils.getInstance().getConnection();
         Statement statement = connection.createStatement();
         ResultSet result = statement.executeQuery("SELECT id, name FROM Account");
+        connection.close();
 
         return Response.status(200).entity(parseResultSet(result)).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addAccount(Account account) throws SQLException, JsonProcessingException {
+        LOGGER.log(Level.INFO, "Add account");
+
+        Connection connection = PostgressUtils.getInstance().getConnection();
+
+        String sql = "INSERT INTO Account (name) values(?)";
+        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, account.getName());
+        statement.executeUpdate();
+
+        ResultSet rs = statement.getGeneratedKeys();
+        if (rs.next()) {
+            int  id = rs.getInt(1);
+            account.setId(id);
+            LOGGER.log(Level.INFO, "Account was added with id: " + id);
+        }
+
+        connection.close();
+        return Response.status(200).entity(account.toString()).build();
     }
 }

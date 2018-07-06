@@ -11,7 +11,7 @@ public class StartStopListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("Servlet has been started.");
-        PostgressConfig.getInstance().load();
+        PostgressUtils.getInstance().load();
     }
 
     @Override
