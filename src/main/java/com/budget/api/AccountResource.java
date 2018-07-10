@@ -49,6 +49,7 @@ public class AccountResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addAccount(Account account) throws SQLException, JsonProcessingException {
         LOGGER.log(Level.INFO, "Add account");
 
@@ -67,6 +68,28 @@ public class AccountResource {
         }
 
         connection.close();
-        return Response.status(200).entity(account.toString()).build();
+        return Response.status(200).entity(account).build();
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response editAccount(@PathParam("id") int id, Account newAccount) throws SQLException {
+        LOGGER.log(Level.INFO, "Edit account");
+
+        Connection connection = PostgressUtils.getInstance().getConnection();
+
+        String sql = "UPDATE Account SET name=(?) WHERE id=(?)";
+        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, newAccount.getName());
+        statement.setInt(2, id);
+        statement.executeUpdate();
+
+        LOGGER.log(Level.INFO, "Account was updated with id: " + id);
+
+        connection.close();
+
+        return Response.status(200).entity(newAccount).build();
     }
 }
