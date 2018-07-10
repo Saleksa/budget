@@ -81,10 +81,10 @@ public class AccountResource {
         Connection connection = PostgressUtils.getInstance().getConnection();
 
         String sql = "UPDATE Account SET name=(?) WHERE id=(?)";
-        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, newAccount.getName());
         statement.setInt(2, id);
-        statement.executeUpdate();
+        statement.execute();
 
         LOGGER.log(Level.INFO, "Account was updated with id: " + id);
 
@@ -92,4 +92,19 @@ public class AccountResource {
 
         return Response.status(200).entity(newAccount).build();
     }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteAccount(@PathParam("id") int id) throws SQLException {
+        LOGGER.log(Level.INFO, "Edit account");
+
+        Connection connection = PostgressUtils.getInstance().getConnection();
+        String sql = "DELETE FROM Account WHERE id=(?)";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, id);
+        statement.execute();
+        connection.close();
+        return Response.status(200).entity(id).build();
+    }
+
 }
