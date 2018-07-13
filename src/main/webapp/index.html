@@ -2,22 +2,40 @@
 <html ng-app="myApp">
 <head>
     <title>Accounts List</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
     <script src="./js/app.js"></script>
     <script src="./js/accountController.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <h2>Add account:</h2>
-    <div ng-controller="postController">
+    <h2>Accounts</h2>
+    <div ng-controller="postController" class="leftPanel">
         <form name="userForm" ng-submit="submitForm()">
-            <input type="text" id="name" ng-model="account.name">
+            <h3>Add account:</h3>
+            Name: <input type="text" id="name" required ng-model="account.name"><br>
+            Description: <textarea id="description" ng-model="account.description"></textarea><br>
+            <!-- Accepted balance formats:
+                123.45
+                123,45
+                23,123,123.12
+                12312313,32
+                12312313.12
+            -->
+            Balance: <input type="text" pattern="\d{1,}(?:[,]\d{3})*(?:[.,]\d{2})?" id="balance" ng-model="account.balance" title="Money format: only numbers and symbols , and ."><br>
+            <label class="container">Is it credit card?
+                <input type="checkbox" id="isCredit" ng-model="account.isCredit">
+                <span class="checkmark"></span>
+            </label>
+            <div ng-show="account.isCredit">
+                Credit limit: <input type="text" pattern="\d{1,}(?:[,]\d{3})*(?:[.,]\d{2})?" id="creditLimit" ng-model="account.creditLimit" title="Money format: only numbers and symbols , and ."><br>
+            </div>
             <button id="add" type="submit">Add</button>
         </form>
-        <h3>{{message}}</h3>
+        <p>{{message}}</p>
     </div>
-    <h2>All accounts:</h2>
-    <div ng-controller="Accounts">
+    <div ng-controller="Accounts" class="rightPanel">  
+        <h3>My accounts:</h3>
         <ul>
             <li ng-repeat="a in accounts | orderBy: 'name'">{{a.name}}</li>
         </ul>
