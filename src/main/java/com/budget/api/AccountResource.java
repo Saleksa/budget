@@ -19,14 +19,11 @@ public class AccountResource {
 
     private static final Logger LOGGER = Logger.getLogger(AccountResource.class.getName());
 
-    private List<Account> parseResultSet(ResultSet set) {
+    private List<Account> parseAccounts(ResultSet set) {
         List<Account> list = new ArrayList<>();
         try {
             while (set.next()) {
-                list.add(new Account(
-                        set.getInt("id"),
-                        set.getString("name"))
-                );
+                list.add(parseAccount(set));
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, ex.toString(), ex);
@@ -34,17 +31,48 @@ public class AccountResource {
         return list;
     }
 
+    private Account parseAccount(ResultSet set) {
+        try {
+            return new Account(
+                    set.getInt("id"),
+                    set.getString("name"),
+                    set.getString("description"),
+                    set.getBoolean("isCredit")
+            );
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, ex.toString(), ex);
+        }
+        return null;
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllAccounts() throws SQLException, IOException {
+    public Response getAllAccountNames() throws SQLException, IOException {
         LOGGER.log(Level.INFO, "Getting all accounts");
 
         Connection connection = PostgressUtils.getInstance().getConnection();
         Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery("SELECT id, name FROM Account");
+        ResultSet result = statement.executeQuery("SELECT * FROM Account");
         connection.close();
 
-        return Response.status(200).entity(parseResultSet(result)).build();
+        return Response.status(200).entity(parseAccounts(result)).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response getAccount(@PathParam("id") int id) throws SQLException {
+        LOGGER.log(Level.INFO, "Get account " + id);
+        Connection connection = PostgressUtils.getInstance().getConnection();
+
+        String sql = "SELECT * FROM Account WHERE id=(?)";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, id);
+        ResultSet result = statement.executeQuery();
+
+        connection.close();
+        result.next();
+        return Response.status(200).entity(parseAccount(result)).build();
     }
 
     @POST
@@ -87,9 +115,9 @@ public class AccountResource {
         statement.execute();
 
         LOGGER.log(Level.INFO, "Account was updated with id: " + id);
-
         connection.close();
 
+        newAccount.setId(id);
         return Response.status(200).entity(newAccount).build();
     }
 
