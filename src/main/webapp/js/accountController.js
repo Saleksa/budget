@@ -1,5 +1,8 @@
 app.controller('Accounts', ['$scope', '$http', function ($scope, $http) {
-    $http.get('/rest/accounts').success(function(response) {
+    $http({
+        method  : 'GET',
+        url     : '/rest/accounts',
+        }).success(function(response) {
         $scope.accounts = response;
     });
 }]);
