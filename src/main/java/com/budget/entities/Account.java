@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account {
@@ -12,19 +12,17 @@ public class Account {
     private int id;
     private String name;
     private String description;
-    private MonetaryAmount money;
-    private boolean isCredit;
+    private boolean credit;
+    private BigDecimal balance;
+    private BigDecimal creditLimit;
 
-    public Account(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Account(int id, String name, String description, boolean isCredit) {
+    public Account(int id, String name, String description, BigDecimal balance, boolean credit, BigDecimal creditLimit) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.isCredit = isCredit;
+        this.balance = balance;
+        this.credit = credit;
+        this.creditLimit = credit ? creditLimit : BigDecimal.valueOf(0.0);
     }
 
     public Account() {
@@ -52,6 +50,18 @@ public class Account {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isCredit() {
+        return credit;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public BigDecimal getCreditLimit() {
+        return creditLimit;
     }
 
     @Override

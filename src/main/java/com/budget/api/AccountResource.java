@@ -37,7 +37,9 @@ public class AccountResource {
                     set.getInt("id"),
                     set.getString("name"),
                     set.getString("description"),
-                    set.getBoolean("isCredit")
+                    set.getBigDecimal("balance"),
+                    set.getBoolean("is_credit"),
+                    set.getBigDecimal("credit_limit")
             );
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, ex.toString(), ex);
@@ -83,9 +85,13 @@ public class AccountResource {
 
         Connection connection = PostgressUtils.getInstance().getConnection();
 
-        String sql = "INSERT INTO Account (name) values(?)";
+        String sql = "INSERT INTO Account (name,description,balance,is_credit,credit_limit) values(?,?,?,?,?)";
         PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         statement.setString(1, account.getName());
+        statement.setString(2, account.getDescription());
+        statement.setBigDecimal(3, account.getBalance());
+        statement.setBoolean(4, account.isCredit());
+        statement.setBigDecimal(5, account.getCreditLimit());
         statement.executeUpdate();
 
         ResultSet rs = statement.getGeneratedKeys();

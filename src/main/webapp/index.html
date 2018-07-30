@@ -2,6 +2,7 @@
 <html ng-app="myApp">
 <head>
     <title>Accounts List</title>
+    <script src="https://unpkg.com/currency.js@~1.1.0/dist/currency.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
     <script src="./js/app.js"></script>
     <script src="./js/accountController.js"></script>
@@ -11,28 +12,25 @@
 <body>
     <h2>Accounts</h2>
     <div ng-controller="postController" class="leftPanel">
-        <form name="userForm" ng-submit="submitForm()">
+        <form name="accountForm" id="accountForm" ng-submit="submitForm()">
             <h3>Add account:</h3>
-            Name: <input type="text" id="name" required ng-model="account.name"><br>
-            Description: <textarea id="description" ng-model="account.description"></textarea><br>
+            Name: <input type="text" id="nameTextbox" required ng-model="account.name"><br>
+            Description: <textarea id="descriptionTextbox" ng-model="account.description"></textarea><br>
             <!-- Accepted balance formats:
                 123.45
-                123,45
                 23,123,123.12
-                12312313,32
-                12312313.12
             -->
-            Balance: <input type="text" pattern="\d{1,}(?:[,]\d{3})*(?:[.,]\d{2})?" id="balance" ng-model="account.balance" title="Money format: only numbers and symbols , and ."><br>
+            Balance: <input type="text" pattern="\d{1,}(?:[,]\d{3})*(?:[.]\d{2})?" id="balanceTextbox" ng-model="account.balance" title="Money format: only numbers and symbols , and ."><br>
             <label class="container">Is it credit card?
-                <input type="checkbox" id="isCredit" ng-model="account.isCredit">
+                <input type="checkbox" id="isCreditCheckbox" ng-model="account.credit">
                 <span class="checkmark"></span>
             </label>
-            <div ng-show="account.isCredit">
-                Credit limit: <input type="text" pattern="\d{1,}(?:[,]\d{3})*(?:[.,]\d{2})?" id="creditLimit" ng-model="account.creditLimit" title="Money format: only numbers and symbols , and ."><br>
+            <div ng-show="account.credit">
+                Credit limit: <input type="text" pattern="\d{1,}(?:[,]\d{3})*(?:[.]\d{2})?" id="creditLimitTextbox" ng-model="account.creditLimit" title="Money format: only numbers and symbols , and ."><br>
             </div>
-            <button id="add" type="submit">Add</button>
+            <button id="addButton" type="submit">Add</button>
+            <p ng-class="{'errorMessage' : errorMessage, 'successMessage' : successMessage}">{{message}}</p>
         </form>
-        <p>{{message}}</p>
     </div>
     <div ng-controller="Accounts" class="rightPanel">  
         <h3>My accounts:</h3>

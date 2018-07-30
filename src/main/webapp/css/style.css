@@ -41,6 +41,14 @@ button {
     height: 30px;
 }
 
+.successMessage {
+    color: blue;
+}
+
+.errorMessage {
+    color: red;
+}
+
 .leftPanel{
     float: left;
     display: block;
